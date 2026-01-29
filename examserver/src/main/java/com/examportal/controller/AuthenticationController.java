@@ -2,6 +2,8 @@ package com.examportal.controller;
 
 import java.security.Principal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,7 +11,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +24,9 @@ import com.examportal.model.User;
 import com.examportal.service.impl.UserDetailsServiceImpl;
 
 @RestController
-@CrossOrigin("*")
 public class AuthenticationController {
+
+	private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
 	@Autowired
 	private AuthenticationManager authManager;
@@ -40,7 +42,7 @@ public class AuthenticationController {
 		try {
 			authenticate(jwtRequest.getUsername(), jwtRequest.getPassword());
 		} catch (UserNotFoundException e) {
-			e.printStackTrace();
+			logger.error("User not found: {}", e.getMessage());
 			throw new Exception("User not Found!");
 		}
 
@@ -53,8 +55,10 @@ public class AuthenticationController {
 		try {
 			authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (DisabledException e) {
+			logger.error("User disabled: {}", e.getMessage());
 			throw new Exception("USER DISABLED! " + e.getMessage());
 		} catch (BadCredentialsException e) {
+			logger.warn("Invalid credentials for user: {}", username);
 			throw new Exception("Invalid Credentials! " + e.getMessage());
 		}
 	}

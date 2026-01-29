@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +26,9 @@ import com.examportal.service.QuizService;
 
 @RestController
 @RequestMapping("/question")
-@CrossOrigin("*")
 public class QuestionController {
+
+	private static final Logger logger = LoggerFactory.getLogger(QuestionController.class);
 
 	@Autowired
 	private QuestionService questionService;
@@ -64,8 +66,17 @@ public class QuestionController {
 		Quiz quiz = quizService.getQuiz(quizId);
 		Set<Question> questions = quiz.getQuestions();
 		List<Question> list = new ArrayList<>(questions);
-		if (list.size() > Integer.parseInt(quiz.getNoOfQUestions())) {
-			list = list.subList(0, Integer.parseInt(quiz.getNoOfQUestions() + 1));
+
+		int noOfQuestions = 0;
+		try {
+			noOfQuestions = Integer.parseInt(quiz.getNoOfQUestions());
+		} catch (NumberFormatException e) {
+			logger.error("Invalid number of questions for quiz {}: {}", quizId, quiz.getNoOfQUestions());
+			noOfQuestions = list.size();
+		}
+
+		if (list.size() > noOfQuestions) {
+			list = list.subList(0, noOfQuestions + 1);
 		}
 
 		list.forEach((q) -> {
@@ -86,19 +97,27 @@ public class QuestionController {
 
 	@PostMapping("/eval-quiz")
 	public ResponseEntity<?> evaluateQuiz(@RequestBody List<Question> questions) {
-		System.out.println(questions);
+		logger.info("Evaluating quiz with {} questions", questions.size());
 		double marksGot = 0;
 		int correctAnswers = 0;
 		int attempted = 0;
+
+		if (questions.isEmpty()) {
+			return ResponseEntity.ok(Map.of("marksGot", 0, "correctAnswers", 0, "attempted", 0));
+		}
+
 		for (Question q : questions) {
 			Question question = questionService.get(q.getQuestionId());
 			if (question.getAnswer().equals(q.getGivenAnswer())) {
 				correctAnswers++;
-				double marksSingle = Double.parseDouble(questions.get(0).getQuiz().getMaxMarks()) / questions.size();
+
+				// Calculate marks per question dynamically
+				double maxMarks = Double.parseDouble(questions.get(0).getQuiz().getMaxMarks());
+				double marksSingle = maxMarks / questions.size();
 				marksGot += marksSingle;
 			}
 
-			if (q.getGivenAnswer() != null) {
+			if (q.getGivenAnswer() != null && !q.getGivenAnswer().trim().equals("")) {
 				attempted++;
 			}
 		}
