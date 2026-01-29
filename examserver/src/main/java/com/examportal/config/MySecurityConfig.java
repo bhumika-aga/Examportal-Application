@@ -9,7 +9,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,7 +18,7 @@ import com.examportal.service.impl.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
-public class MySecurityConfig extends WebSecurityConfiguration {
+public class MySecurityConfig {
 
 	@Autowired
 	private JwtAuthenticationEntryPoint unauthorizedHandler;
@@ -52,10 +51,14 @@ public class MySecurityConfig extends WebSecurityConfiguration {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable())
-				.authorizeRequests(requests -> requests.antMatchers("/generate-token", "/user/", "/user/test")
-						.permitAll().antMatchers(HttpMethod.OPTIONS).permitAll().anyRequest().authenticated())
+				.authorizeHttpRequests(requests -> requests
+						.requestMatchers("/generate-token", "/user/", "/user/test", "/h2-console/**")
+						.permitAll()
+						.requestMatchers(HttpMethod.OPTIONS).permitAll()
+						.anyRequest().authenticated())
 				.exceptionHandling(handling -> handling.authenticationEntryPoint(unauthorizedHandler))
-				.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+				.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())); // For H2 console
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
