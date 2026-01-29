@@ -33,11 +33,6 @@ public class UserController {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
-	@GetMapping("/test")
-	public String test() {
-		return "Welcome to Examportal Application Backend";
-	}
-
 	@PostMapping("/")
 	public User createUser(@RequestBody User user) throws Exception {
 		user.setProfile("default.png");

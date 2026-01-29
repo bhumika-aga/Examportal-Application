@@ -7,29 +7,49 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
 
+/**
+ * JWT utility class for token generation, validation, and parsing.
+ * Provides methods to create, validate, and extract information from JWT
+ * tokens.
+ */
 @Component
 public class JwtUtils {
 
-	private String SECRET_KEY = "examportalexamportalexamportalexamportal"; // Must be at least 256 bits for HS256
+	@Value("${jwt.secret}")
+	private String secretKey;
+
+	@Value("${jwt.expiration}")
+	private long jwtExpiration;
+
 	private SecretKey getSigningKey() {
-		return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+		return Keys.hmacShaKeyFor(secretKey.getBytes());
 	}
 
+	/**
+	 * Extract username from JWT token
+	 */
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
 
+	/**
+	 * Extract expiration date from JWT token
+	 */
 	public Date extractExpiration(String token) {
 		return extractClaim(token, Claims::getExpiration);
 	}
 
+	/**
+	 * Extract a specific claim from JWT token
+	 */
 	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
 		final Claims claims = extractAllClaims(token);
 		return claimsResolver.apply(claims);
@@ -47,22 +67,27 @@ public class JwtUtils {
 		return extractExpiration(token).before(new Date());
 	}
 
+	/**
+	 * Generate JWT token for user
+	 */
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
 		return createToken(claims, userDetails.getUsername());
 	}
 
 	private String createToken(Map<String, Object> claims, String subject) {
-
 		return Jwts.builder()
 				.claims(claims)
 				.subject(subject)
 				.issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+				.expiration(new Date(System.currentTimeMillis() + jwtExpiration))
 				.signWith(getSigningKey())
 				.compact();
 	}
 
+	/**
+	 * Validate JWT token against user details
+	 */
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = extractUsername(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
