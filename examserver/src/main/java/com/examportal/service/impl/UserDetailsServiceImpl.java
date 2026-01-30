@@ -1,5 +1,7 @@
 package com.examportal.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +14,8 @@ import com.examportal.repository.UserRepository;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+	private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -19,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findByUsername(username);
 		if (user == null) {
-			System.out.println("User Not Found!");
+			logger.error("User not found with username: {}", username);
 			throw new UsernameNotFoundException("No User Found!");
 		}
 		return user;

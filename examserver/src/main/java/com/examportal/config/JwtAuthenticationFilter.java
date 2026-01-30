@@ -2,6 +2,8 @@ package com.examportal.config;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +23,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+	private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 
@@ -31,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		final String requestTokenHeader = request.getHeader("Authorization");
-		System.out.println(requestTokenHeader);
+		logger.debug("Request Token Header: {}", requestTokenHeader);
 		String username = null;
 		String jwtToken = null;
 		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
@@ -39,14 +43,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			try {
 				username = jwtUtil.extractUsername(jwtToken);
 			} catch (ExpiredJwtException e) {
+				logger.error("Token has expired!");
 				e.printStackTrace();
-				System.out.println("Token has expired!");
 			} catch (Exception e) {
+				logger.error("Error validating token!");
 				e.printStackTrace();
-				System.out.println("Error!");
 			}
 		} else {
-			System.out.println("Invalid Token! Token does not start with the string Bearer!");
+			logger.warn("Invalid Token! Token does not start with the string Bearer!");
 		}
 
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -58,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthentication);
 			}
 		} else {
-			System.out.println("Token is not valid!");
+			logger.warn("Token is not valid!");
 		}
 
 		filterChain.doFilter(request, response);

@@ -1,132 +1,116 @@
-# Examportal-Application
+# Exam Portal Application
 
-Built using: SpringBoot, MySQL, JWT Auth Tokens, Angular, Github
+A comprehensive full-stack online examination system built with **Spring Boot 3** (Backend) and **React 18 + TypeScript** (Frontend).
 
-Online exam app: Teachers can conduct/evaluate MCQ exams, students can attempt and view scores.
+## 🚀 Features
 
-• Implemented JWT authentication to ensure secure access to the platform.
+### User Module
 
-• Made Admin portal for test/quiz management and user portal for students to take timed tests.
+- **Authentication**: Secure Login and Registration with JWT.
+- **Dashboard**: View available quizzes by category.
+- **Quiz Taking**:
+  - Timer-based exams.
+  - Auto-submission.
+  - Interactive UI with no page refreshes.
+- **Profile**: View user details and role.
+- **Dark Mode**: Fully supported dark/light theme.
 
-• Increased efficiency by 30% compared to traditional exam-taking methods.
+### Admin Module
 
-## Project Structure
+- **Dashboard**: Overview of categories and quizzes.
+- **Category Management**: Add/Update/Delete categories.
+- **Quiz Management**: Create quizzes, set marks, timer, and active status.
+- **Question Management**: Add/Edit questions with options and answers.
 
-- **examfront/** - Angular frontend application (port 4200)
-- **examserver/** - Spring Boot backend application (port 8080)
+## 🛠 Tech Stack
 
-## Prerequisites
+### Backend
 
-- Node.js 18+ (with OpenSSL legacy provider support)
+- **Java 17**
+- **Spring Boot 3.4.9**
+- **Spring Security** (JWT + BCrypt)
+- **Spring Data JPA** (Hibernate)
+- **H2 Database** (In-memory/File for Dev/Prod)
+- **Docker** & **Spring Boot Docker Compose**
+
+### Frontend
+
+- **React 18** (Vite)
+- **TypeScript**
+- **TailwindCSS** (Styling)
+- **React Query** (State Management)
+- **React Hook Form** (Form Validation)
+- **Lucide React** (Icons)
+- **SweetAlert2** (Notifications)
+
+## 🏃‍♂️ Getting Started
+
+### Prerequisites
+
 - Java 17+
-- Maven 3.6+
-- No database installation required (uses embedded H2 database)
+- Node.js 18+
+- Docker (Optional but recommended)
 
-## Setup Instructions
+### 🐳 Run with Docker (Recommended)
 
-### Backend (Spring Boot)
-
-1. Install Maven using SDKMAN (if not already installed):
-
-   ```bash
-   curl -s https://get.sdkman.io | bash
-   source ~/.sdkman/bin/sdkman-init.sh
-   sdk install maven
-   ```
-
-2. Navigate to the backend directory:
+1. Clone the repository.
+2. Run Docker Compose from the backend directory:
 
    ```bash
    cd examserver
+   docker-compose up --build
    ```
 
-3. Build the project:
+   - **Backend**: <http://localhost:8080>
+   - **Swagger UI**: <http://localhost:8080/swagger-ui.html>
 
-   ```bash
-   mvn clean compile
-   ```
-
-4. Database configuration is already set up for H2 in-memory database (no manual configuration needed)
-
-5. Run the application:
-
-   ```bash
-   mvn spring-boot:run
-   ```
-
-### Frontend (Angular)
-
-1. Navigate to the frontend directory:
+3. Run the frontend separately:
 
    ```bash
    cd examfront
+   npm install && npm run dev
    ```
 
-2. Install dependencies (using legacy peer deps for compatibility):
+   - **Frontend**: <http://localhost:5173>
 
-   ```bash
-   npm install --legacy-peer-deps
-   ```
+### 💻 Manual Setup
 
-3. Build the project:
+#### Backend (`examserver`)
 
-   ```bash
-   NODE_OPTIONS="--openssl-legacy-provider" npm run build
-   ```
+```bash
+cd examserver
+mvn spring-boot:run
+```
 
-4. Start the development server:
+#### Frontend (`examfront`)
 
-   ```bash
-   NODE_OPTIONS="--openssl-legacy-provider" npm start
-   ```
+```bash
+cd examfront
+npm install
+npm run dev
+```
 
-## Running the Application
+## ☁️ Deployment (Render.com)
 
-1. Start the backend server (runs on <http://localhost:8080>)
-2. Start the frontend server (runs on <http://localhost:4200>)
-3. Access the application at <http://localhost:4200>
-4. Access H2 database console at <http://localhost:8080/h2-console> (for development/debugging)
+This project includes a `render.yaml` for easy deployment on Render.
 
-## Known Issues & Fixes Applied
+1. Push to GitHub.
+2. Create a new "Blueprint Instance" on Render.
+3. Select your repository.
+4. Render will deploy both backend and frontend automatically.
 
-### Frontend Issues Fixed
+## 📝 API Documentation
 
-- **Node.js Compatibility**: Removed invalid Node/npm version dependencies from package.json
-- **Dependency Conflicts**: Used `--legacy-peer-deps` flag for npm installation
-- **OpenSSL Compatibility**: Added `NODE_OPTIONS="--openssl-legacy-provider"` for Node 18+ compatibility
+API documentation is available via Swagger UI when the backend is running:
+`http://localhost:8080/swagger-ui.html`
 
-### Backend Issues Fixed
+## 📚 Architecture Documentation
 
-- **Maven Installation**: Installed Maven via SDKMAN for build support
-- **Build Configuration**: Fixed Maven wrapper permissions and build process
-- **Spring Boot 3.x Migration**: Updated from Spring Boot 2.7.18 to 3.4.8
-- **Database Migration**: Replaced MySQL with embedded H2 database
-- **Dependencies Updated**: Updated JWT library and Spring Security configuration
+For a comprehensive guide to the system architecture, design patterns, and implementation details, see [PROJECT_ARCHITECTURE.md](./PROJECT_ARCHITECTURE.md).
 
-## Database Setup
+## 📁 Project Structure
 
-No manual database setup required! The application now uses an embedded H2 in-memory database that is automatically configured and initialized when the application starts.
-
-### H2 Database Console
-
-You can access the H2 database console at <http://localhost:8080/h2-console> when the application is running:
-
-- **JDBC URL**: `jdbc:h2:mem:examportal`
-- **Username**: `sa`
-- **Password**: `password`
-
-## Technologies Used
-
-- **Frontend**: Angular 11, Angular Material, Bootstrap
-- **Backend**: Spring Boot 3.4.8, Spring Security, Spring Data JPA
-- **Database**: H2 Database (embedded, in-memory)
-- **Authentication**: JWT (JSON Web Tokens)
-- **Build Tools**: Maven, npm
-
-## Recent Upgrades
-
-- ✅ **Spring Boot**: Upgraded from 2.7.18 to 3.4.8
-- ✅ **Database**: Migrated from MySQL to H2 embedded database
-- ✅ **Dependencies**: Updated JWT library to version 0.12.6
-- ✅ **Security**: Updated Spring Security configuration for Spring Boot 3.x
-- ✅ **JPA**: Migrated from `javax.persistence.*` to `jakarta.persistence.*`
+- `examserver/`: Spring Boot Backend (includes Dockerfile and docker-compose.yml)
+- `examfront/`: React Frontend
+- `render.yaml`: Cloud deployment config
+- `PROJECT_ARCHITECTURE.md`: Detailed architecture documentation
