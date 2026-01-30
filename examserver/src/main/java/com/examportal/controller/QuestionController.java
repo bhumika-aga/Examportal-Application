@@ -76,7 +76,7 @@ public class QuestionController {
 		}
 
 		if (list.size() > noOfQuestions) {
-			list = list.subList(0, noOfQuestions + 1);
+			list = list.subList(0, noOfQuestions);
 		}
 
 		list.forEach((q) -> {

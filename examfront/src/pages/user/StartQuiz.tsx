@@ -15,21 +15,24 @@ export default function StartQuiz() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [isTimerActive, setIsTimerActive] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize timer
   useEffect(() => {
-    if (quiz && questions?.length) {
-      // Assuming quiz.noOfQuestions and some time per question logic or generic
+    if (quiz && questions && questions.length > 0 && !isTimerActive && timeLeft === 0) {
       // If backend doesn't provide time, let's assume 2 mins per question
       const totalTime = questions.length * 2 * 60;
       setTimeLeft(totalTime);
+      setIsTimerActive(true);
     }
-  }, [quiz, questions]);
+  }, [quiz, questions, isTimerActive, timeLeft]);
 
   // Timer countdown
   useEffect(() => {
-    if (timeLeft <= 0 && questions?.length) {
+    if (!isTimerActive) return;
+
+    if (timeLeft <= 0) {
       submitQuiz(); // Auto submit
       return;
     }
@@ -40,7 +43,7 @@ export default function StartQuiz() {
 
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeLeft, questions]);
+  }, [timeLeft, isTimerActive]);
 
   // Prevent refresh/back
   useEffect(() => {
@@ -115,10 +118,27 @@ export default function StartQuiz() {
     });
   };
 
-  if (isLoading || !questions) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader2 className="animate-spin h-10 w-10 text-indigo-600" />
+      </div>
+    );
+  }
+
+  if (!questions || questions.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen space-y-4">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">No Questions Found</h2>
+        <p className="text-gray-600 dark:text-gray-400">
+          This quiz doesn't have any questions yet.
+        </p>
+        <button
+          onClick={() => navigate("/user-dashboard/0")}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          Go Back
+        </button>
       </div>
     );
   }
@@ -185,45 +205,43 @@ export default function StartQuiz() {
                 </div>
               ))}
           </div>
-        </div>
-      </div>
 
-      {/* Footer Navigation */}
-      <div className="bg-white dark:bg-zinc-800 border-t border-gray-200 dark:border-zinc-700 p-4">
-        <div className="container mx-auto max-w-4xl flex justify-between items-center">
-          <button
-            onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
-            disabled={currentQuestionIndex === 0}
-            className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg disabled:opacity-50"
-          >
-            <ChevronLeft size={20} className="mr-2" />
-            Previous
-          </button>
+          {/* Navigation Buttons */}
+          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-100 dark:border-zinc-700">
+            <button
+              onClick={() => setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))}
+              disabled={currentQuestionIndex === 0}
+              className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg disabled:opacity-50 transition-colors"
+            >
+              <ChevronLeft size={20} className="mr-2" />
+              Previous
+            </button>
 
-          {currentQuestionIndex === questions.length - 1 ? (
-            <button
-              onClick={confirmSubmit}
-              disabled={isSubmitting}
-              className="flex items-center px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors shadow-sm disabled:opacity-70"
-            >
-              {isSubmitting ? (
-                <Loader2 className="animate-spin h-5 w-5 mr-2" />
-              ) : (
-                <CheckCircle size={20} className="mr-2" />
-              )}
-              Submit Quiz
-            </button>
-          ) : (
-            <button
-              onClick={() =>
-                setCurrentQuestionIndex((prev) => Math.min(questions.length - 1, prev + 1))
-              }
-              className="flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-sm"
-            >
-              Next
-              <ChevronRight size={20} className="ml-2" />
-            </button>
-          )}
+            {currentQuestionIndex === questions.length - 1 ? (
+              <button
+                onClick={confirmSubmit}
+                disabled={isSubmitting}
+                className="flex items-center px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors shadow-sm disabled:opacity-70"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                ) : (
+                  <CheckCircle size={20} className="mr-2" />
+                )}
+                Submit Quiz
+              </button>
+            ) : (
+              <button
+                onClick={() =>
+                  setCurrentQuestionIndex((prev) => Math.min(questions.length - 1, prev + 1))
+                }
+                className="flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-sm"
+              >
+                Next
+                <ChevronRight size={20} className="ml-2" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

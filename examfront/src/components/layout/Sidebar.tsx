@@ -1,4 +1,4 @@
-import { BookOpen, LayoutDashboard, List, LogOut, Menu, PlusCircle, User, X } from "lucide-react";
+import { BookOpen, LayoutDashboard, List, LogOut, Menu, User, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -17,14 +17,13 @@ export default function Sidebar({ isAdmin = false }: SidebarProps) {
     { name: "Dashboard", icon: LayoutDashboard, path: "/admin" },
     { name: "Profile", icon: User, path: "/admin/profile" },
     { name: "Categories", icon: List, path: "/admin/categories" },
-    { name: "Add Category", icon: PlusCircle, path: "/admin/add-category" },
     { name: "Quizzes", icon: BookOpen, path: "/admin/quizzes" },
-    { name: "Add Quiz", icon: PlusCircle, path: "/admin/add-quiz" },
   ];
 
   const userItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/user-dashboard" },
     { name: "Profile", icon: User, path: "/user-dashboard/profile" },
+    { name: "Categories", icon: List, path: "/user-dashboard/categories" },
     { name: "Load Quiz", icon: BookOpen, path: "/user-dashboard/0" }, // 0 means all/default
   ];
 

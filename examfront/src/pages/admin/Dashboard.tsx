@@ -21,6 +21,7 @@ export default function Dashboard() {
         <Route path="/categories" element={<CategoryList />} />
         <Route path="/add-category" element={<AddCategory />} />
         <Route path="/quizzes" element={<QuizList />} />
+        <Route path="/quizzes/category/:catId" element={<QuizList />} />
         <Route path="/add-quiz" element={<AddQuiz />} />
         <Route path="/quiz/:qId" element={<UpdateQuiz />} />
         <Route path="/view-questions/:qId/:title" element={<ViewQuestions />} />

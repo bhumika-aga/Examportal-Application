@@ -24,3 +24,8 @@ export const updateQuiz = async (quiz: Quiz): Promise<Quiz> => {
   const response = await api.put<Quiz>("/quiz/", quiz);
   return response.data;
 };
+
+export const getQuizzesOfCategory = async (cId: number): Promise<Quiz[]> => {
+  const response = await api.get<Quiz[]>(`/quiz/category/${cId}`);
+  return response.data;
+};

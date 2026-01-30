@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Layout from "../../components/layout/Layout";
+import CategoryList from "../admin/categories/CategoryList";
 import Instructions from "./Instructions";
 import LoadQuiz from "./LoadQuiz";
 import Profile from "./Profile";
@@ -19,6 +20,7 @@ export default function UserDashboard() {
     <Layout>
       <Routes>
         <Route path="/" element={<WelcomeUser />} />
+        <Route path="/categories" element={<CategoryList readOnly={true} />} />
         <Route path="/:catId" element={<LoadQuiz />} />
         <Route path="/instructions/:qId" element={<Instructions />} />
         <Route path="/start/:qId" element={<StartQuiz />} />

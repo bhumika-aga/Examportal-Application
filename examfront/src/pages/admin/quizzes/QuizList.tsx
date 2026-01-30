@@ -1,13 +1,21 @@
 import { AlertCircle, BookOpen, Clock, Edit, Loader2, Plus, Trash2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import PageTransition from "../../../components/layout/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/Card";
-import { useDeleteQuiz, useQuizzes } from "../../../hooks/useQuiz";
+import { useDeleteQuiz, useQuizzes, useQuizzesOfCategory } from "../../../hooks/useQuiz";
 
 export default function QuizList() {
-  const { data: quizzes, isLoading } = useQuizzes();
+  const { catId } = useParams();
+  const { data: allQuizzes, isLoading: isLoadingAll } = useQuizzes();
+  const { data: catQuizzes, isLoading: isLoadingCat } = useQuizzesOfCategory(
+    catId ? Number(catId) : null
+  );
   const deleteQuizMutation = useDeleteQuiz();
   const navigate = useNavigate();
+
+  const quizzes = catId ? catQuizzes : allQuizzes;
+  const isLoading = catId ? isLoadingCat : isLoadingAll;
+  const categoryTitle = catId && quizzes?.length ? quizzes[0].category.title : null;
 
   const handleDelete = (id: number) => {
     if (window.confirm("Are you sure you want to delete this quiz?")) {
@@ -27,8 +35,12 @@ export default function QuizList() {
     <PageTransition className="space-y-6 p-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quizzes</h1>
-          <p className="text-gray-600 dark:text-gray-400">Manage your quizzes here</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            {categoryTitle ? `Quizzes: ${categoryTitle}` : "Quizzes"}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            {categoryTitle ? `Manage quizzes for ${categoryTitle}` : "Manage all quizzes"}
+          </p>
         </div>
         <Link
           to="/admin/add-quiz"
