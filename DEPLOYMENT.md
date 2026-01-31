@@ -129,6 +129,15 @@ If you prefer not to use Blueprints, follow these steps to deploy services indiv
      - Example: `https://examportal-server-pu0l.onrender.com`
 5. Click **Create Static Site**.
 
+6. **Important (Fix 404 Errors)**:
+   - Go to your new Static Site's dashboard.
+   - Click on **Redirects/Rewrites**.
+   - Add a new rule:
+     - **Source**: `/*`
+     - **Destination**: `/index.html`
+     - **Action**: `Rewrite`
+   - Click **Save Changes**. (This fixes issues when refreshing pages like `/login`).
+
 #### 3. Verify
 
 - Open the frontend URL provided by Render.
