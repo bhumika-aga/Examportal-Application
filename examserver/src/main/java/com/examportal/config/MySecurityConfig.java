@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class MySecurityConfig {
     
     private final String allowedOrigins;
@@ -77,18 +77,14 @@ public class MySecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(requests -> requests
-                                                   // Public endpoints
-                                                   .requestMatchers("/generate-token", "/user/", "/user/test").permitAll()
-                                                   // H2 Console (development only)
+                                                   .requestMatchers(HttpMethod.POST, "/generate-token").permitAll()
+                                                   .requestMatchers(HttpMethod.POST, "/user/").permitAll()
                                                    .requestMatchers("/h2-console/**").permitAll()
-                                                   // Actuator endpoints for health monitoring
-                                                   .requestMatchers("/actuator/**").permitAll()
-                                                   // Swagger/OpenAPI endpoints
+                                                   .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                                                   .requestMatchers("/actuator/**").authenticated()
                                                    .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**")
                                                    .permitAll()
-                                                   // Allow preflight requests
                                                    .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                                                   // All other requests require authentication
                                                    .anyRequest().authenticated())
             .exceptionHandling(handling -> handling.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
