@@ -66,7 +66,7 @@ export default function StartQuiz() {
     const currentQ = questions[currentQuestionIndex];
     setAnswers({
       ...answers,
-      [currentQ.quesId]: option,
+      [currentQ.questionId]: option,
     });
   };
 
@@ -76,7 +76,7 @@ export default function StartQuiz() {
     // Backend expects list of questions with 'givenAnswer' set
     const evalQuestions = questions?.map((q) => ({
       ...q,
-      givenAnswer: answers[q.quesId] || "",
+      givenAnswer: answers[q.questionId] || "",
     }));
 
     try {
@@ -183,7 +183,7 @@ export default function StartQuiz() {
                   key={idx}
                   onClick={() => handleOptionSelect(option)}
                   className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                    answers[currentQuestion.quesId] === option
+                    answers[currentQuestion.questionId] === option
                       ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400"
                       : "border-gray-200 dark:border-zinc-700 hover:border-gray-300 dark:hover:border-zinc-600"
                   }`}
@@ -191,12 +191,12 @@ export default function StartQuiz() {
                   <div className="flex items-center">
                     <div
                       className={`h-5 w-5 rounded-full border flex items-center justify-center mr-3 ${
-                        answers[currentQuestion.quesId] === option
+                        answers[currentQuestion.questionId] === option
                           ? "bg-indigo-600 border-indigo-600"
                           : "border-gray-400"
                       }`}
                     >
-                      {answers[currentQuestion.quesId] === option && (
+                      {answers[currentQuestion.questionId] === option && (
                         <div className="h-2.5 w-2.5 rounded-full bg-white" />
                       )}
                     </div>

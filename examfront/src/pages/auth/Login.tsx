@@ -20,15 +20,9 @@ export default function Login() {
   const onSubmit = async (data: LoginRequest) => {
     setIsLoading(true);
     try {
-      await login(data);
-      // Helper function to check role would be better, but context handles state update.
-      // We need to know where to redirect.
-      // Since login updates state asynchronously, we might rely on the returned user or just basic redirect.
-      // For now, let's redirect to default admin or user dashboard based on role is safer after fetching user.
-      // But login in context doesn't return user. I should probably update login to return user.
-      // Or just redirect to / which will have logic?
-      // Let's redirect to /user-dashboard for now, or check localstorage.
-      navigate("/user-dashboard"); // Temporary, will improve redirect logic
+      const user = await login(data);
+      const isAdmin = user.authorities.some((a) => a.authority === "ADMIN");
+      navigate(isAdmin ? "/admin" : "/user-dashboard");
     } catch {
       // Error handled in context
     } finally {

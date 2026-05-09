@@ -1,26 +1,26 @@
 package com.examportal.service;
 
-import java.util.List;
-import java.util.Set;
-
 import com.examportal.model.quiz.Category;
 import com.examportal.model.quiz.Quiz;
 
+import java.util.List;
+import java.util.Set;
+
 public interface QuizService {
-
-	public Quiz addQuiz(Quiz quiz);
-
-	public Quiz updateQuiz(Quiz quiz);
-
-	public Set<Quiz> getAllQuiz();
-
-	public Quiz getQuiz(Long quizId);
-
-	public void deleteQuiz(Long quizId);
-
-	public List<Quiz> getQuizzesOfCategory(Category category);
-
-	public List<Quiz> getActiveQuizzes();
-
-	public List<Quiz> getActiveQuizzesOfCategory(Category category);
+    
+    Quiz addQuiz(Quiz quiz);
+    
+    Quiz updateQuiz(Quiz quiz);
+    
+    Set<Quiz> getAllQuiz();
+    
+    Quiz getQuiz(Long quizId);
+    
+    void deleteQuiz(Long quizId);
+    
+    List<Quiz> getQuizzesOfCategory(Category category);
+    
+    List<Quiz> getActiveQuizzes();
+    
+    List<Quiz> getActiveQuizzesOfCategory(Category category);
 }

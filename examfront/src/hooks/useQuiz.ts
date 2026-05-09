@@ -1,6 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { addQuiz, deleteQuiz, getQuiz, getQuizzes, getQuizzesOfCategory, updateQuiz } from "../services/quiz.service";
+import {
+  addQuiz,
+  deleteQuiz,
+  getQuiz,
+  getQuizzes,
+  getQuizzesOfCategory,
+  updateQuiz,
+} from "../services/quiz.service";
 
 export const useQuizzes = () => {
   return useQuery({

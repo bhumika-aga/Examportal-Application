@@ -1,6 +1,6 @@
-import { useParams, Link } from "react-router-dom";
-import { useQuizzes } from "../../hooks/useQuiz";
 import { Loader2, PlayCircle } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { useQuizzes } from "../../hooks/useQuiz";
 
 export default function LoadQuiz() {
   const { catId } = useParams();

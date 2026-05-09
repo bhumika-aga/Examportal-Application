@@ -1,0 +1,588 @@
+{
+  "info": {
+    "name": "Exam Portal API",
+    "description": "Complete API collection for the Exam Portal application. Base URL: http://localhost:8080\n\nUsage:\n1. Run 'Login Admin' or 'Login User' first to get a token.\n2. The token is automatically saved to {{token}} variable.\n3. All subsequent requests use Bearer {{token}} authorization.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "  pm.test('Token received', () => pm.expect(json.token).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/generate-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["generate-token"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiJ9...\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "  pm.test('Token received', () => pm.expect(json.token).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user\",\n  \"password\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/generate-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["generate-token"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/current-user",
+              "host": ["{{baseUrl}}"],
+              "path": ["current-user"]
+            }
+          },
+          "response": [
+            {
+              "name": "Admin User",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"id\": 1,\n  \"username\": \"admin\",\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"email\": \"admin@examportal.com\",\n  \"phone\": \"1234567890\",\n  \"enabled\": true,\n  \"profile\": \"default.png\",\n  \"authorities\": [{\"authority\": \"ADMIN\"}]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser\",\n  \"password\": \"newpass123\",\n  \"firstName\": \"New\",\n  \"lastName\": \"User\",\n  \"email\": \"newuser@example.com\",\n  \"phone\": \"9876543210\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"id\": 3,\n  \"username\": \"newuser\",\n  \"firstName\": \"New\",\n  \"lastName\": \"User\",\n  \"email\": \"newuser@example.com\",\n  \"phone\": \"9876543210\",\n  \"enabled\": true,\n  \"profile\": \"default.png\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get User by Username",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/user/admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "admin"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/user/3",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "3"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/category/",
+              "host": ["{{baseUrl}}"],
+              "path": ["category", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "[\n  {\"cId\": 1, \"title\": \"Programming\", \"description\": \"Questions related to programming languages and concepts\"},\n  {\"cId\": 2, \"title\": \"Web Development\", \"description\": \"Questions about HTML, CSS, JavaScript, and web frameworks\"},\n  {\"cId\": 3, \"title\": \"Database\", \"description\": \"Questions about SQL, NoSQL, and database management\"},\n  {\"cId\": 4, \"title\": \"General Knowledge\", \"description\": \"Questions about general knowledge and current affairs\"}\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/category/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["category", "1"]
+            }
+          }
+        },
+        {
+          "name": "Add Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mathematics\",\n  \"description\": \"Questions about math, algebra, and statistics\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/category/",
+              "host": ["{{baseUrl}}"],
+              "path": ["category", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"cId\": 5,\n  \"title\": \"Mathematics\",\n  \"description\": \"Questions about math, algebra, and statistics\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cId\": 5,\n  \"title\": \"Mathematics & Statistics\",\n  \"description\": \"Questions about math, algebra, and advanced statistics\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/category/",
+              "host": ["{{baseUrl}}"],
+              "path": ["category", ""]
+            }
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/category/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["category", "5"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Quizzes",
+      "item": [
+        {
+          "name": "Get All Quizzes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/",
+              "host": ["{{baseUrl}}"],
+              "path": ["quiz", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "[\n  {\n    \"qId\": 1,\n    \"title\": \"Java Fundamentals\",\n    \"description\": \"Test your knowledge of Java programming basics\",\n    \"maxMarks\": \"100\",\n    \"noOfQuestions\": \"5\",\n    \"active\": true,\n    \"category\": {\"cId\": 1, \"title\": \"Programming\", \"description\": \"...\"}\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Active Quizzes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["quiz", "active"]
+            }
+          }
+        },
+        {
+          "name": "Get Quiz by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["quiz", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Quizzes by Category",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/category/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["quiz", "category", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Quizzes by Category",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/category/active/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["quiz", "category", "active", "1"]
+            }
+          }
+        },
+        {
+          "name": "Add Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Spring Boot Basics\",\n  \"description\": \"Fundamentals of Spring Boot framework\",\n  \"maxMarks\": \"100\",\n  \"noOfQuestions\": \"5\",\n  \"active\": true,\n  \"category\": {\"cId\": 1}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/",
+              "host": ["{{baseUrl}}"],
+              "path": ["quiz", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"qId\": 7,\n  \"title\": \"Spring Boot Basics\",\n  \"description\": \"Fundamentals of Spring Boot framework\",\n  \"maxMarks\": \"100\",\n  \"noOfQuestions\": \"5\",\n  \"active\": true,\n  \"category\": {\"cId\": 1, \"title\": \"Programming\"}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Quiz",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qId\": 1,\n  \"title\": \"Java Fundamentals - Updated\",\n  \"description\": \"Updated description\",\n  \"maxMarks\": \"100\",\n  \"noOfQuestions\": \"5\",\n  \"active\": true,\n  \"category\": {\"cId\": 1}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/quiz/",
+              "host": ["{{baseUrl}}"],
+              "path": ["quiz", ""]
+            }
+          }
+        },
+        {
+          "name": "Delete Quiz",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/quiz/7",
+              "host": ["{{baseUrl}}"],
+              "path": ["quiz", "7"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Questions",
+      "item": [
+        {
+          "name": "Get All Questions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/question/",
+              "host": ["{{baseUrl}}"],
+              "path": ["question", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Questions for User (shuffled, no answers)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/question/quiz/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["question", "quiz", "1"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success - answers are blank, questions shuffled",
+              "status": "OK",
+              "code": 200,
+              "body": "[\n  {\n    \"questionId\": 3,\n    \"content\": \"Which method is the entry point of a Java application?\",\n    \"option1\": \"start()\",\n    \"option2\": \"run()\",\n    \"option3\": \"main()\",\n    \"option4\": \"init()\",\n    \"answer\": \"\",\n    \"givenAnswer\": null,\n    \"quiz\": {\"qId\": 1, \"title\": \"Java Fundamentals\", \"maxMarks\": \"100\", \"noOfQuestions\": \"5\", \"active\": true}\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Questions for Admin (with correct answers)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/question/quiz/all/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["question", "quiz", "all", "1"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success - includes correct answer field",
+              "status": "OK",
+              "code": 200,
+              "body": "[\n  {\n    \"questionId\": 1,\n    \"content\": \"Which keyword is used to define a class in Java?\",\n    \"option1\": \"class\",\n    \"option2\": \"Class\",\n    \"option3\": \"define\",\n    \"option4\": \"struct\",\n    \"answer\": \"class\",\n    \"quiz\": {\"qId\": 1, \"title\": \"Java Fundamentals\"}\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Add Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"What is encapsulation in Java?\",\n  \"option1\": \"Hiding implementation details\",\n  \"option2\": \"Method overriding\",\n  \"option3\": \"Multiple inheritance\",\n  \"option4\": \"Dynamic binding\",\n  \"answer\": \"Hiding implementation details\",\n  \"quiz\": {\"qId\": 1}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question/",
+              "host": ["{{baseUrl}}"],
+              "path": ["question", ""]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"questionId\": 31,\n  \"content\": \"What is encapsulation in Java?\",\n  \"option1\": \"Hiding implementation details\",\n  \"option2\": \"Method overriding\",\n  \"option3\": \"Multiple inheritance\",\n  \"option4\": \"Dynamic binding\",\n  \"answer\": \"Hiding implementation details\",\n  \"quiz\": {\"qId\": 1, \"title\": \"Java Fundamentals\"}\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Question",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionId\": 1,\n  \"content\": \"Which keyword is used to define a class in Java? (Updated)\",\n  \"option1\": \"class\",\n  \"option2\": \"Class\",\n  \"option3\": \"define\",\n  \"option4\": \"struct\",\n  \"answer\": \"class\",\n  \"quiz\": {\"qId\": 1}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question/",
+              "host": ["{{baseUrl}}"],
+              "path": ["question", ""]
+            }
+          }
+        },
+        {
+          "name": "Delete Question",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/question/31",
+              "host": ["{{baseUrl}}"],
+              "path": ["question", "31"]
+            }
+          }
+        },
+        {
+          "name": "Evaluate Quiz (all correct)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\"questionId\":1,\"content\":\"Which keyword is used to define a class in Java?\",\"option1\":\"class\",\"option2\":\"Class\",\"option3\":\"define\",\"option4\":\"struct\",\"answer\":\"\",\"givenAnswer\":\"class\",\"quiz\":{\"qId\":1,\"title\":\"Java Fundamentals\",\"maxMarks\":\"100\",\"noOfQuestions\":\"5\",\"active\":true}},\n  {\"questionId\":2,\"content\":\"What is the default value of an int variable in Java?\",\"option1\":\"null\",\"option2\":\"0\",\"option3\":\"1\",\"option4\":\"undefined\",\"answer\":\"\",\"givenAnswer\":\"0\",\"quiz\":{\"qId\":1,\"title\":\"Java Fundamentals\",\"maxMarks\":\"100\",\"noOfQuestions\":\"5\",\"active\":true}},\n  {\"questionId\":3,\"content\":\"Which method is the entry point of a Java application?\",\"option1\":\"start()\",\"option2\":\"run()\",\"option3\":\"main()\",\"option4\":\"init()\",\"answer\":\"\",\"givenAnswer\":\"main()\",\"quiz\":{\"qId\":1,\"title\":\"Java Fundamentals\",\"maxMarks\":\"100\",\"noOfQuestions\":\"5\",\"active\":true}},\n  {\"questionId\":4,\"content\":\"What does JVM stand for?\",\"option1\":\"Java Visual Machine\",\"option2\":\"Java Virtual Machine\",\"option3\":\"Java Variable Memory\",\"option4\":\"Java Verified Module\",\"answer\":\"\",\"givenAnswer\":\"Java Virtual Machine\",\"quiz\":{\"qId\":1,\"title\":\"Java Fundamentals\",\"maxMarks\":\"100\",\"noOfQuestions\":\"5\",\"active\":true}},\n  {\"questionId\":5,\"content\":\"Which of these is NOT a primitive data type in Java?\",\"option1\":\"int\",\"option2\":\"boolean\",\"option3\":\"String\",\"option4\":\"char\",\"answer\":\"\",\"givenAnswer\":\"String\",\"quiz\":{\"qId\":1,\"title\":\"Java Fundamentals\",\"maxMarks\":\"100\",\"noOfQuestions\":\"5\",\"active\":true}}\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question/eval-quiz",
+              "host": ["{{baseUrl}}"],
+              "path": ["question", "eval-quiz"]
+            }
+          },
+          "response": [
+            {
+              "name": "All 5 Correct - 100 marks",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"marksGot\": 100.0,\n  \"correctAnswers\": 5,\n  \"attempted\": 5\n}"
+            }
+          ]
+        },
+        {
+          "name": "Evaluate Quiz (partial correct)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\"questionId\":1,\"content\":\"Q1\",\"option1\":\"class\",\"answer\":\"\",\"givenAnswer\":\"class\",\"quiz\":{\"qId\":1,\"maxMarks\":\"100\"}},\n  {\"questionId\":2,\"content\":\"Q2\",\"option2\":\"0\",\"answer\":\"\",\"givenAnswer\":\"WRONG\",\"quiz\":{\"qId\":1,\"maxMarks\":\"100\"}},\n  {\"questionId\":3,\"content\":\"Q3\",\"option3\":\"main()\",\"answer\":\"\",\"givenAnswer\":\"\",\"quiz\":{\"qId\":1,\"maxMarks\":\"100\"}}\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/question/eval-quiz",
+              "host": ["{{baseUrl}}"],
+              "path": ["question", "eval-quiz"]
+            }
+          },
+          "response": [
+            {
+              "name": "1 Correct, 2 Attempted",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"marksGot\": 33.333333333333336,\n  \"correctAnswers\": 1,\n  \"attempted\": 2\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "health"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\"status\": \"UP\"}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

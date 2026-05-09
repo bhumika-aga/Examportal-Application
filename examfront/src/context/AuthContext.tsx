@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-  login: (data: LoginRequest) => Promise<void>;
+  login: (data: LoginRequest) => Promise<User>;
   logout: () => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
@@ -48,21 +48,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth();
   }, []);
 
-  const login = async (data: LoginRequest) => {
+  const login = async (data: LoginRequest): Promise<User> => {
     try {
       const response = await generateToken(data);
       const newToken = response.token;
 
-      // Save token
       localStorage.setItem("token", newToken);
       setToken(newToken);
 
-      // Fetch user details immediately
       const userDetails = await getCurrentUser();
       setUser(userDetails);
 
       toast.success("Login Successful");
-      return;
+      return userDetails;
     } catch (error) {
       toast.error("Invalid Credentials");
       throw error;

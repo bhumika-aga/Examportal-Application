@@ -39,7 +39,7 @@ export interface Quiz {
 }
 
 export interface Question {
-  quesId: number;
+  questionId: number;
   content: string;
   image: string;
   option1: string;

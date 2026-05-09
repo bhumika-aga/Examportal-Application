@@ -1,149 +1,108 @@
-# Deployment Guide
+# Deployment
 
-This guide provides comprehensive instructions for deploying the Exam Portal application. Choose the method that best suits your needs.
+## Local / Self-hosted
 
-- [**Option 1: Manual / Local Deployment**](#1-manual--local-deployment) (For VPS, local server, or development)
-- [**Option 2: Cloud Deployment (Render.com)**](#2-cloud-deployment-rendercom-free-tier) (For quick, free hosting)
+### Prerequisites
 
----
+- Java 17+
+- Node.js 18+
 
-## 1. Manual / Local Deployment
+### Backend
 
-Use this method if you want to run the application on your own server (e.g., AWS EC2, DigitalOcean) or locally.
+```bash
+cd examserver
 
-### Prerequisites (Manual Deployment)
+# Build the JAR
+./mvnw clean package -DskipTests      # Linux/Mac
+mvnw.cmd clean package -DskipTests   # Windows
 
-- **Java Development Kit (JDK) 17** or higher
-- **Node.js** (v18+) and **npm**
-- **Maven** (included via wrapper)
+# Run
+java -jar target/examserver-0.0.1-SNAPSHOT.jar
+```
 
-### Part A: Backend (Spring Boot)
+The server starts on port 8080 by default. Override with the `PORT` env var.
 
-1. **Navigate to backend directory**:
+### Frontend
 
-   ```bash
-   cd examserver
-   ```
+```bash
+cd examfront
+npm install
+npm run build
+npx serve -s dist -l 5173
+```
 
-2. **Build the application**:
+Set `VITE_API_URL` before building if the backend is not at `http://localhost:8080`:
 
-   ```bash
-   # Linux/Mac
-   ./mvnw clean install -DskipTests
-
-   # Windows
-   mvnw.cmd clean install -DskipTests
-   ```
-
-3. **Run the JAR**:
-
-   ```bash
-   java -jar target/examserver-0.0.1-SNAPSHOT.jar
-   ```
-
-   - The server starts on **port 8080**.
-   - API URL: `http://localhost:8080`
-
-### Part B: Frontend (React)
-
-1. **Navigate to frontend directory**:
-
-   ```bash
-   cd examfront
-   ```
-
-2. **Install dependencies**:
-
-   ```bash
-   npm install
-   ```
-
-3. **Build production version**:
-
-   ```bash
-   npm run build
-   ```
-
-   - This creates a `dist/` folder with static files.
-
-4. **Serve the application**:
-   You can use any static server (Nginx, Apache, or `serve`).
-
-   ```bash
-   npx serve -s dist -l 5173
-   ```
-
-   - The app runs on **port 5173**.
+```bash
+VITE_API_URL=https://your-backend.example.com npm run build
+```
 
 ---
 
-## 2. Cloud Deployment (Render.com Free Tier)
+## Render.com (free tier)
 
-Use this method for free, zero-config cloud hosting.
+### Option A — Blueprint (recommended)
 
-### Prerequisites (Render Deployment)
-
-- Free account on [Render.com](https://dashboard.render.com).
-- Code pushed to GitHub.
-
-### Method A: Blueprints (Recommended)
-
-1. On Render Dashboard, click **New +** -> **Blueprint**.
-2. Connect your repository.
-3. Render detects `render.yaml` and sets up both Backend (Docker) and Frontend (Static) automatically.
+1. Push the repo to GitHub.
+2. On Render Dashboard: **New → Blueprint**.
+3. Connect the repository — Render detects `render.yaml` and provisions both services automatically.
 4. Click **Apply**.
 
-### Method B: Manual Render Setup (Step-by-Step)
+`render.yaml` already configures:
 
-If you prefer not to use Blueprints, follow these steps to deploy services individually.
+- Backend as a Docker web service with `JWT_SECRET` auto-generated and `CORS_ALLOWED_ORIGINS=*`
+- Frontend as a static site with `VITE_API_URL` wired from the backend service URL
 
-#### 1. Backend Service (Spring Boot)
+### Option B — Manual setup
 
-1. Click **New +** and select **Web Service**.
-2. Connect your GitHub repository.
-3. Fill in the details:
-   - **Name**: `examportal-server`
-   - **Runtime**: `Docker`
-   - **Region**: Choose one close to you (e.g., Singapore, Frankfurt).
-   - **Branch**: `main`
-   - **Root Directory**: `examserver` <-- **CRITICAL**: Do not leave blank!
-   - **Instance Type**: Free
-4. Scroll down to **Environment Variables** and add:
-   - `JWT_SECRET`: (Enter a long random string)
-   - `JWT_EXPIRATION`: `36000000`
-5. Click **Create Web Service**.
-6. Wait for the build to finish. **Copy the URL** of your new backend (e.g., `https://examportal-server.onrender.com`).
+**Backend (Web Service)**
 
-#### 2. Frontend Service (React)
+| Setting        | Value        |
+|----------------|--------------|
+| Runtime        | Docker       |
+| Root Directory | `examserver` |
+| Instance Type  | Free         |
 
-1. Click **New +** and select **Static Site**.
-2. Connect the **same** GitHub repository.
-3. Fill in the details:
-   - **Name**: `examportal-client`
-   - **Branch**: `main`
-   - **Root Directory**: `examfront` <-- **CRITICAL**
-   - **Build Command**: `npm install && npm run build`
-   - **Publish Directory**: `dist`
-4. Scroll down to **Environment Variables** and add:
-   - `VITE_API_URL`: Paste your Backend URL here (No trailing slash).
-     - Example: `https://examportal-server-pu0l.onrender.com`
-5. Click **Create Static Site**.
+Environment variables to add:
 
-6. **Important (Fix 404 Errors)**:
-   - Go to your new Static Site's dashboard.
-   - Click on **Redirects/Rewrites**.
-   - Add a new rule:
-     - **Source**: `/*`
-     - **Destination**: `/index.html`
-     - **Action**: `Rewrite`
-   - Click **Save Changes**. (This fixes issues when refreshing pages like `/login`).
+| Key                    | Value                      |
+|------------------------|----------------------------|
+| `JWT_SECRET`           | Any long random string     |
+| `JWT_EXPIRATION`       | `36000000`                 |
+| `CORS_ALLOWED_ORIGINS` | `*` (or your frontend URL) |
 
-#### 3. Verify
+Copy the backend URL after deploy (e.g. `https://examportal-server.onrender.com`).
 
-- Open the frontend URL provided by Render.
-- Test login (allow ~1 minute for backend to wake up).
+**Frontend (Static Site)**
 
-### ⚠️ Free Tier Limitations
+| Setting           | Value                          |
+|-------------------|--------------------------------|
+| Root Directory    | `examfront`                    |
+| Build Command     | `npm install && npm run build` |
+| Publish Directory | `dist`                         |
 
-- **Backend Spin Down**: Spins down after 15 mins inactivity. First request will be slow (~50s).
-- **Data Persistence**: Uses H2 database (in-memory). **Data is lost** on restart/spin-down. Use a separate PostgreSQL database for persistence.
+Environment variables to add:
+
+| Key            | Value                                |
+|----------------|--------------------------------------|
+| `VITE_API_URL` | Your backend URL (no trailing slash) |
+
+**Fix client-side routing (required)**
+
+In the static site's dashboard → **Redirects/Rewrites**, add:
+
+| Source | Destination   | Action  |
+|--------|---------------|---------|
+| `/*`   | `/index.html` | Rewrite |
+
+This prevents 404s when users refresh on routes like `/login` or `/admin`.
+
+---
+
+## Free Tier Notes
+
+- **Backend cold starts**: Render free tier spins down after 15 minutes of inactivity. The first request after idle
+  takes ~30–50 seconds.
+- **Data persistence**: The app uses an in-memory H2 database. All data is lost on every restart/spin-down. For
+  persistence, replace the H2 datasource with a Render PostgreSQL instance (or any external database) and update
+  `application.properties`.

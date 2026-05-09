@@ -1,13 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import {
-  getQuestionsOfQuiz,
-  getQuestionsOfQuizForUser,
   addQuestion,
   deleteQuestion,
   getQuestion,
+  getQuestionsOfQuiz,
+  getQuestionsOfQuizForUser,
   updateQuestion,
 } from "../services/question.service";
-import toast from "react-hot-toast";
 
 export const useQuestions = (qId: number) => {
   return useQuery({

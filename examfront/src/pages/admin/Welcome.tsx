@@ -1,8 +1,16 @@
+import { BookOpen, Grid3X3 } from "lucide-react";
 import PageTransition from "../../components/layout/PageTransition";
 import { useAuth } from "../../context/AuthContext";
+import { useCategories } from "../../hooks/useCategory";
+import { useQuizzes } from "../../hooks/useQuiz";
 
 export default function Welcome() {
   const { user } = useAuth();
+  const { data: categories } = useCategories();
+  const { data: quizzes } = useQuizzes();
+
+  const activeQuizzes = quizzes?.filter((q) => q.active).length ?? 0;
+  const totalCategories = categories?.length ?? 0;
 
   return (
     <PageTransition className="space-y-6 p-8">
@@ -15,20 +23,23 @@ export default function Welcome() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="h-32 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 text-white shadow-lg transform transition-transform hover:scale-[1.02]">
-          <div className="text-indigo-100 text-sm font-medium mb-1">Total Users</div>
-          <div className="text-3xl font-bold">1,234</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 text-white shadow-lg transform transition-transform hover:scale-[1.02]">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-indigo-100 text-sm font-medium">Active Quizzes</div>
+            <BookOpen size={20} className="text-indigo-200" />
+          </div>
+          <div className="text-4xl font-bold">{activeQuizzes}</div>
+          <div className="text-indigo-200 text-sm mt-1">of {quizzes?.length ?? 0} total</div>
         </div>
 
-        <div className="h-32 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white shadow-lg transform transition-transform hover:scale-[1.02]">
-          <div className="text-purple-100 text-sm font-medium mb-1">Active Quizzes</div>
-          <div className="text-3xl font-bold">42</div>
-        </div>
-
-        <div className="h-32 rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 p-6 text-white shadow-lg transform transition-transform hover:scale-[1.02]">
-          <div className="text-pink-100 text-sm font-medium mb-1">Categories</div>
-          <div className="text-3xl font-bold">12</div>
+        <div className="rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white shadow-lg transform transition-transform hover:scale-[1.02]">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-purple-100 text-sm font-medium">Categories</div>
+            <Grid3X3 size={20} className="text-purple-200" />
+          </div>
+          <div className="text-4xl font-bold">{totalCategories}</div>
+          <div className="text-purple-200 text-sm mt-1">quiz categories</div>
         </div>
       </div>
     </PageTransition>

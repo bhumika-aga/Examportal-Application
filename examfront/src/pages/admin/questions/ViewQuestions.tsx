@@ -1,7 +1,7 @@
-import { useParams, Link } from "react-router-dom";
-import { useQuestions, useDeleteQuestion } from "../../../hooks/useQuestion";
+import { ArrowLeft, Loader2, Plus, Trash2 } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { useDeleteQuestion, useQuestions } from "../../../hooks/useQuestion";
 import { useQuiz } from "../../../hooks/useQuiz";
-import { Loader2, Plus, Trash2, ArrowLeft } from "lucide-react";
 import { cn } from "../../../utils";
 
 export default function ViewQuestions() {
@@ -13,9 +13,9 @@ export default function ViewQuestions() {
   // Use title from URL or fallback to quiz data
   const quizTitle = title || quiz?.title;
 
-  const handleDelete = (quesId: number) => {
+  const handleDelete = (questionId: number) => {
     if (window.confirm("Are you sure you want to delete this question?")) {
-      deleteQuestionMutation.mutate(quesId);
+      deleteQuestionMutation.mutate(questionId);
     }
   };
 
@@ -56,7 +56,7 @@ export default function ViewQuestions() {
       <div className="space-y-4">
         {questions?.map((q, index) => (
           <div
-            key={q.quesId}
+            key={q.questionId}
             className="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 p-6"
           >
             <div className="flex justify-between items-start">
@@ -121,7 +121,7 @@ export default function ViewQuestions() {
 
               <div className="ml-4 flex flex-col space-y-2">
                 <button
-                  onClick={() => handleDelete(q.quesId)}
+                  onClick={() => handleDelete(q.questionId)}
                   className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                   title="Delete Question"
                 >

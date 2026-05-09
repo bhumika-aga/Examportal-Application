@@ -11,12 +11,6 @@ export const getQuestionsOfQuizForUser = async (qId: number): Promise<Question[]
   return response.data;
 };
 
-export const getQuestionsOfQuizOrAdmin = async (qId: number): Promise<Question[]> => {
-  // Admin gets all questions
-  const response = await api.get<Question[]>(`/question/quiz/all/${qId}`);
-  return response.data;
-};
-
 export const addQuestion = async (question: Partial<Question>): Promise<Question> => {
   const response = await api.post<Question>("/question/", question);
   return response.data;

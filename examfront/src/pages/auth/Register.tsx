@@ -1,10 +1,10 @@
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../../services/auth.service";
 import type { User } from "../../types";
-import { Loader2 } from "lucide-react";
 
 export default function Register() {
   const navigate = useNavigate();

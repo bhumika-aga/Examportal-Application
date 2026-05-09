@@ -1,18 +1,18 @@
 package com.examportal.service;
 
-import java.util.Set;
-
 import com.examportal.model.quiz.Category;
 
+import java.util.Set;
+
 public interface CategoryService {
-
-	public Category addCategory(Category category);
-
-	public Category updateCategory(Category category);
-
-	public Set<Category> getCategories();
-
-	public Category getCategory(Long categoryId);
-
-	public void deleteCategory(Long categoryId);
+    
+    Category addCategory(Category category);
+    
+    Category updateCategory(Category category);
+    
+    Set<Category> getCategories();
+    
+    Category getCategory(Long categoryId);
+    
+    void deleteCategory(Long categoryId);
 }
